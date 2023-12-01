@@ -10,7 +10,7 @@ setup(name='tap-hubspot',
       classifiers=['Programming Language :: Python :: 3 :: Only'],
       py_modules=['tap_hubspot'],
       install_requires=[
-          'attrs==16.3.0',
+          'attrs>=16.3.0',
           'singer-python==5.13.0',
           'requests>=2.20.0',
           'backoff>=1.11.1,<3.0',
