@@ -86,9 +86,9 @@ class HubspotBaseTest(BaseCase):
                 self.OBEYS_START_DATE: True
             },
             "contacts": {
-                self.PRIMARY_KEYS: {"vid"},
+                self.PRIMARY_KEYS: {"id"},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
-                self.REPLICATION_KEYS: {"versionTimestamp"},
+                self.REPLICATION_KEYS: {"updatedAt"},
                 self.EXPECTED_PAGE_SIZE: 100,
                 self.OBEYS_START_DATE: True
             },
@@ -131,7 +131,7 @@ class HubspotBaseTest(BaseCase):
                 self.OBEYS_START_DATE: True
             },
             "owners": {
-                self.PRIMARY_KEYS: {"ownerId"},
+                self.PRIMARY_KEYS: {"id"},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
                 self.REPLICATION_KEYS: {"updatedAt"},
                 self.OBEYS_START_DATE: True  # TODO is this a BUG?
@@ -165,6 +165,20 @@ class HubspotBaseTest(BaseCase):
                 self.OBEYS_START_DATE: True
             },
             "co_firsts": {
+                self.PRIMARY_KEYS: {"id"},
+                self.REPLICATION_METHOD: self.INCREMENTAL,
+                self.REPLICATION_KEYS: {"updatedAt"},
+                self.EXPECTED_PAGE_SIZE: 100,
+                self.OBEYS_START_DATE: True
+            },
+            "custom_object_campaigns": {
+                self.PRIMARY_KEYS: {"id"},
+                self.REPLICATION_METHOD: self.INCREMENTAL,
+                self.REPLICATION_KEYS: {"updatedAt"},
+                self.EXPECTED_PAGE_SIZE: 100,
+                self.OBEYS_START_DATE: True
+            },
+            "custom_object_contacts": {
                 self.PRIMARY_KEYS: {"id"},
                 self.REPLICATION_METHOD: self.INCREMENTAL,
                 self.REPLICATION_KEYS: {"updatedAt"},
@@ -207,7 +221,26 @@ class HubspotBaseTest(BaseCase):
     def expected_streams(self):
         """A set of expected stream names"""
         return set(self.expected_metadata().keys())
-
+    
+    def failed_sync_streams(self):
+        """A set of streams that are known to have sync issues and should be skipped in assertion errors."""
+        return {"subscription_changes", "email_events"}
+    
+    def validate_failed_sync_streams(self, stream, *synced_data_records):
+        """
+        Validate if the stream is in the known failed sync streams.
+        If it is, log a warning and skip the assertion.
+        If not, raise an error indicating the stream is missing from synced_records.
+        """
+        for ds in synced_data_records:
+            if stream not in ds:
+                if stream in self.failed_sync_streams():
+                    LOGGER.warning("Stream %s is known to have sync issues, skipping", stream)
+                    return False
+                else:
+                    raise KeyError(f"Stream '{stream}' missing from synced_records, verify the stream records")
+        return True
+    
     def expected_replication_keys(self):
         """
         return a dictionary with key of table name

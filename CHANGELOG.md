@@ -1,5 +1,28 @@
 # Changelog
 
+## 4.0.0
+  * Upgrade API version v1 to v3 for [contacts](https://developers.hubspot.com/docs/api-reference/crm-contacts-v3/basic/get-crm-v3-objects-contacts) and [contact_lists](https://developers.hubspot.com/docs/api-reference/crm-lists-v3/lists/post-crm-v3-lists-search) stream.
+  * Update primary_key to `id` and replication_key to `updatedAt` for `contacts`
+
+## 3.3.0
+  * Add support for personal access tokens (api_key) instead of passing oauth creds [#276](https://github.com/singer-io/tap-hubspot/pull/276)
+
+## 3.2.1
+  * Bump dependency versions for twistlock compliance [#268](https://github.com/singer-io/tap-hubspot/pull/268)
+
+## 3.2.0
+  * Add support for `select_fields_by_default` config property [#266](https://github.com/singer-io/tap-hubspot/pull/266)
+  * Fix dependabot issue
+
+## 3.1.1
+  * Replace legacy properties for Contacts and Deals [#265](https://github.com/singer-io/tap-hubspot/pull/265)
+
+## 3.1.0
+  * Renames custom object that shares name with standard objects [#263](https://github.com/singer-io/tap-hubspot/pull/263)
+
+## 3.0.0
+  * Upgrade Owners API endpoint [#256](https://github.com/singer-io/tap-hubspot/pull/256)
+
 ## 2.13.2
   * Fix out-of-index error [#253](https://github.com/singer-io/tap-hubspot/pull/253)
 
@@ -11,7 +34,7 @@
 
 ## 2.12.2
   * Use engagements_page_size advanced option [#234](https://github.com/singer-io/tap-hubspot/pull/234)
-  * 
+
 ## 2.12.1
   * Use sync start time for writing bookmarks [#226](https://github.com/singer-io/tap-hubspot/pull/226)
 

@@ -18,7 +18,7 @@ class TestHubspotInterruptedSync1(HubspotBaseTest):
 
     def streams_to_test(self):
         """expected streams minus the streams not under test"""
-        return {'companies', 'engagements', 'tickets'}
+        return {'companies', 'engagements', 'tickets', 'contacts'}
 
     def simulated_interruption(self, reference_state):
 
@@ -43,6 +43,11 @@ class TestHubspotInterruptedSync1(HubspotBaseTest):
             days=-1, str_format=self.BASIC_DATE_FORMAT)
         new_state['bookmarks']['tickets']['updatedAt'] = tickets_bookmark
 
+        contacts_bookmark = self.timedelta_formatted(
+            reference_state['bookmarks']['contacts']['updatedAt'],
+            days=-1, str_format=self.BASIC_DATE_FORMAT)
+        new_state['bookmarks']['contacts']['updatedAt'] = contacts_bookmark
+
         return new_state
 
     def get_properties(self):
@@ -50,7 +55,7 @@ class TestHubspotInterruptedSync1(HubspotBaseTest):
         # return {'start_date' : '2017-11-22T00:00:00Z'}
         return {
             'start_date' : datetime.strftime(
-                datetime.today()-timedelta(days=3), self.START_DATE_FORMAT
+                datetime.today()-timedelta(days=5), self.START_DATE_FORMAT
             ),
         }
 
@@ -139,4 +144,3 @@ class TestHubspotInterruptedSync1(HubspotBaseTest):
 
                 else:
                     raise AssertionError(f"Replication method is {replication_method} for stream: {stream}")
-

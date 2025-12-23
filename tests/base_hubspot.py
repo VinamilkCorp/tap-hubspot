@@ -71,9 +71,9 @@ class HubspotBaseCase(BaseCase):
                 BaseCase.OBEYS_START_DATE: True
             },
             "contacts": {
-                BaseCase.PRIMARY_KEYS: {"vid"},
+                BaseCase.PRIMARY_KEYS: {"id"},
                 BaseCase.REPLICATION_METHOD: BaseCase.INCREMENTAL,
-                BaseCase.REPLICATION_KEYS: {"versionTimestamp"},
+                BaseCase.REPLICATION_KEYS: {"updatedAt"},
                 BaseCase.API_LIMIT: 100,
                 BaseCase.OBEYS_START_DATE: True
             },
@@ -116,7 +116,7 @@ class HubspotBaseCase(BaseCase):
                 BaseCase.OBEYS_START_DATE: True
             },
             "owners": {
-                BaseCase.PRIMARY_KEYS: {"ownerId"},
+                BaseCase.PRIMARY_KEYS: {"id"},
                 BaseCase.REPLICATION_METHOD: BaseCase.INCREMENTAL,
                 BaseCase.REPLICATION_KEYS: {"updatedAt"},
                 BaseCase.OBEYS_START_DATE: True  # TODO is this a BUG?
@@ -151,6 +151,22 @@ class HubspotBaseCase(BaseCase):
                 BaseCase.OBEYS_START_DATE: True
             },
             "co_firsts": {
+                BaseCase.PRIMARY_KEYS: {"id"},
+                BaseCase.REPLICATION_METHOD: BaseCase.INCREMENTAL,
+                BaseCase.REPLICATION_KEYS: {"updatedAt"},
+                BaseCase.API_LIMIT: 100,
+                BaseCase.EXPECTED_PAGE_SIZE: 100,
+                BaseCase.OBEYS_START_DATE: True
+            },
+            "custom_object_campaigns": {
+                BaseCase.PRIMARY_KEYS: {"id"},
+                BaseCase.REPLICATION_METHOD: BaseCase.INCREMENTAL,
+                BaseCase.REPLICATION_KEYS: {"updatedAt"},
+                BaseCase.API_LIMIT: 100,
+                BaseCase.EXPECTED_PAGE_SIZE: 100,
+                BaseCase.OBEYS_START_DATE: True
+            },
+            "custom_object_contacts": {
                 BaseCase.PRIMARY_KEYS: {"id"},
                 BaseCase.REPLICATION_METHOD: BaseCase.INCREMENTAL,
                 BaseCase.REPLICATION_KEYS: {"updatedAt"},

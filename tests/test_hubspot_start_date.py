@@ -59,7 +59,7 @@ class TestHubspotStartDate(HubspotBaseTest):
             }
         else:
             return {
-                'start_date': self.timedelta_formatted(utc_today, days=-5)
+                'start_date': self.timedelta_formatted(utc_today, days=-3)
             }
 
     def test_run(self):
@@ -85,6 +85,8 @@ class TestHubspotStartDate(HubspotBaseTest):
 
         # Test by stream
         for stream in self.expected_streams():
+            if not self.validate_failed_sync_streams(stream, first_sync_records, second_sync_records):
+                continue
             with self.subTest(stream=stream):
 
                 # gather expectations

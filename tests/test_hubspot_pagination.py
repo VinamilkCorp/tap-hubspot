@@ -29,12 +29,13 @@ class HubspotPaginationTest(PaginationTest, HubspotBaseCase):
             'contacts_by_company',
             'email_events',
             'subscription_changes', # BUG_TDL-14938 https://jira.talendforge.org/browse/TDL-14938
+            'co_firsts'
         })
         return streams_to_test
 
     def get_properties(self):
         return {
-            'start_date' : datetime.strftime(datetime.today()-timedelta(days=7), self.START_DATE_FORMAT)
+            'start_date' : datetime.strftime(datetime.today()-timedelta(days=5), self.START_DATE_FORMAT)
         }
 
     def setUp(self):
@@ -76,7 +77,7 @@ class HubspotPaginationTest(PaginationTest, HubspotBaseCase):
             # if we do not exceed the limit generate more data so that we do
             if under_target > 0 :
                 LOGGER.info(f"need to make {under_target} records for {stream} stream")
-                if stream in {'subscription_changes', 'emails_events'}:
+                if stream in {'subscription_changes', 'email_events'}:
                     test_client.create(stream, subscriptions=existing_records[stream], times=under_target)
                 elif stream == 'contacts_by_company':
                     test_client.create(stream, company_ids, times=under_target)

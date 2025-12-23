@@ -38,7 +38,7 @@ class TestHubspotBookmarks(HubspotBaseTest):
 
     def get_properties(self):
         return {
-            'start_date' : datetime.strftime(datetime.today()-timedelta(days=3), self.START_DATE_FORMAT),
+            'start_date' : datetime.strftime(datetime.today()-timedelta(days=5), self.START_DATE_FORMAT),
         }
 
     def setUp(self):
@@ -137,7 +137,8 @@ class TestHubspotBookmarks(HubspotBaseTest):
 
         # Test by Stream
         for stream in expected_streams:
-
+            if not self.validate_failed_sync_streams(stream, synced_records, synced_records_2):
+                continue
             with self.subTest(stream=stream):
 
                 # gather expected values

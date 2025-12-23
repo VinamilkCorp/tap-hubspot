@@ -22,16 +22,6 @@ def get_matching_actual_record_by_pk(expected_primary_key_dict, actual_records):
         can_save = True
     return ret_records
 
-FIELDS_ADDED_BY_TAP = {
-    # In 'contacts' streams 'versionTimeStamp' is not available in response of the second call.
-    # In the 1st call, Tap retrieves records of all contacts and from those records, it collects vids(id of contact).
-    # These records contain the versionTimestamp field.
-    # In the 2nd call, vids collected from the 1st call will be used to retrieve the whole contact record.
-    # Here, the records collected for detailed contact information do not contain the versionTimestamp field.
-    # So, we add the versionTimestamp field(fetched from 1st call records) explicitly in the record of 2nd call.
-    "contacts": { "versionTimestamp" }
-}
-
 KNOWN_EXTRA_FIELDS = {
     'deals': {
         # BUG_TDL-14993 | https://jira.talendforge.org/browse/TDL-14993
@@ -42,26 +32,6 @@ KNOWN_EXTRA_FIELDS = {
 }
 
 KNOWN_MISSING_FIELDS = {
-    'contacts':{ # BUG https://jira.talendforge.org/browse/TDL-16016
-        'property_hs_latest_source',
-        'property_hs_latest_source_data_1',
-        'property_hs_latest_source_data_2',
-        'property_hs_latest_source_timestamp',
-        'property_hs_timezone',
-        'property_hs_v2_cumulative_time_in_lead',
-        'property_hs_v2_cumulative_time_in_opportunity',
-        'property_hs_v2_cumulative_time_in_subscriber',
-        'property_hs_v2_date_entered_customer',
-        'property_hs_v2_date_entered_lead',
-        'property_hs_v2_date_entered_opportunity',
-        'property_hs_v2_date_entered_subscriber',
-        'property_hs_v2_date_exited_lead',
-        'property_hs_v2_date_exited_opportunity',
-        'property_hs_v2_date_exited_subscriber',
-        'property_hs_v2_latest_time_in_lead',
-        'property_hs_v2_latest_time_in_opportunity',
-        'property_hs_v2_latest_time_in_subscriber',
-    },
     'contact_lists': {  # BUG https://jira.talendforge.org/browse/TDL-14996
         'authorId',
         'teamIds',
@@ -95,7 +65,11 @@ KNOWN_MISSING_FIELDS = {
         'contactCounts',
     },
     'owners': {  # BUG https://jira.talendforge.org/browse/TDL-15000
-        'activeSalesforceId'
+        'activeSalesforceId',
+
+        # Field is returned by API but not listed in official Hubspot documentation
+        'userIdIncludingInactive',
+        'type'
     },
     'forms': {  # BUG https://jira.talendforge.org/browse/TDL-15001
         'alwaysCreateNewCompany',
@@ -103,6 +77,7 @@ KNOWN_MISSING_FIELDS = {
         'publishAt',
         'editVersion',
         'embedVersion',
+        'enrichable',
         'themeName',
         'style',
         'thankYouMessageJson',
@@ -163,7 +138,8 @@ KNOWN_MISSING_FIELDS = {
         'property_hs_v2_date_exited_appointmentscheduled',
         'property_hs_v2_latest_time_in_appointmentscheduled',
         'property_hs_v2_cumulative_time_in_appointmentscheduled',
-        'property_hs_v2_date_entered_qualifiedtobuy'
+        'property_hs_v2_date_entered_qualifiedtobuy',
+        'property_deal_currency_code'
     },
     'subscription_changes':{
         'normalizedEmailId'
@@ -253,6 +229,10 @@ class TestHubspotAllFields(HubspotBaseTest):
                 replication_method = self.expected_replication_method()[stream]
                 primary_keys = sorted(self.expected_primary_keys()[stream])
 
+                # checking for failed unsynced streams
+                if not self.validate_failed_sync_streams(stream, synced_records):
+                    continue
+
                 # gather replicated records
                 actual_records = [message['data']
                                   for message in synced_records[stream]['messages']
@@ -272,7 +252,7 @@ class TestHubspotAllFields(HubspotBaseTest):
                             continue # skip this expected record if it isn't replicated
                         actual_record = matching_actual_records_by_pk[0]
 
-                        expected_keys = set(expected_record.keys()).union(FIELDS_ADDED_BY_TAP.get(stream, {}))
+                        expected_keys = set(expected_record.keys())
                         actual_keys = set(actual_record.keys())
 
                         # NB: KNOWN_MISSING_FIELDS is a dictionary of streams to aggregated missing fields.

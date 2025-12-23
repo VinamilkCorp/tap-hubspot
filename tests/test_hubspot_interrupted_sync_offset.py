@@ -107,8 +107,8 @@ class TestHubspotInterruptedSyncOffsetContactLists(HubspotBaseTest):
                                         state_2["bookmarks"][stream].get(replication_key),
                                         msg="First sync bookmark should not be greater than the second bookmark.")
             elif stream == 'contacts_by_company':
-                self.assertEquals(state_1["bookmarks"][stream], {"offset": {}})
-                self.assertEquals(state_2["bookmarks"][stream], {"offset": {}})
+                self.assertEqual(state_1["bookmarks"][stream], {"offset": {}})
+                self.assertEqual(state_2["bookmarks"][stream], {"offset": {}})
 
             else:
                 replication_key = list(replication_keys[stream])[0]
@@ -117,25 +117,6 @@ class TestHubspotInterruptedSyncOffsetContactLists(HubspotBaseTest):
                                     msg="First sync bookmark should not be greater than the second bookmark.")
 
 
-class TestHubspotInterruptedSyncOffsetContacts(TestHubspotInterruptedSyncOffsetContactLists):
-    """Testing interrupted syncs for streams that implement unique bookmarking logic."""
-    @staticmethod
-    def name():
-        return "tt_hubspot_interrupt_contacts"
-
-    def get_properties(self):
-        return {
-            'start_date' : '2021-10-01T00:00:00Z'
-        }
-
-
-    def stream_to_interrupt(self):
-        return 'contacts'
-
-    def state_to_inject(self, new_state):
-        new_state['bookmarks']['contacts'] = {'offset': {'vidOffset': 3502}}
-        return new_state
-
 class TestHubspotInterruptedSyncOffsetDeals(TestHubspotInterruptedSyncOffsetContactLists):
     """Testing interrupted syncs for streams that implement unique bookmarking logic."""
     @staticmethod
@@ -143,8 +124,10 @@ class TestHubspotInterruptedSyncOffsetDeals(TestHubspotInterruptedSyncOffsetCont
         return "tt_hubspot_interrupt_deals"
 
     def get_properties(self):
-        return {
-            'start_date' : '2021-10-10T00:00:00Z'
+        return  {
+            'start_date' : datetime.strftime(
+                datetime.today()-timedelta(days=3), self.START_DATE_FORMAT
+            ),
         }
 
     def stream_to_interrupt(self):
@@ -164,7 +147,9 @@ class TestHubspotInterruptedSyncOffsetCompanies(TestHubspotInterruptedSyncOffset
 
     def get_properties(self):
         return {
-            'start_date' : '2023-12-31T00:00:00Z'
+            'start_date' : datetime.strftime(
+                datetime.today()-timedelta(days=5), self.START_DATE_FORMAT
+            ),
         }
 
     def stream_to_interrupt(self):
